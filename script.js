@@ -30,20 +30,12 @@ const DEFAULT_QUESTS = [];
 const WEAPON_NAMES = ['별빛 단검','바람의 검','달빛 활','새벽 지팡이','모험가의 검','은하의 창','숲의 활'];
 const ARMOR_NAMES = ['구름 망토','초원 가죽갑옷','별빛 로브','여행자의 갑옷','달의 흉갑','숲의 망토','은하 판금갑옷'];
 const SHOP_PREFIX = ['낡은','정교한','빛나는','신비한','용감한','찬란한','전설의'];
-const REST_EXAMPLES = [
-  '따뜻한 차를 마시며 15분 아무것도 하지 않기',
-  '창문을 열고 20분 음악 들으며 쉬기',
-  '휴대폰을 내려놓고 20분 낮잠 자기',
-  '좋아하는 향을 맡으며 15분 천천히 호흡하기',
-  '공원 벤치에서 20분 하늘 바라보기'
-];
 
 let state = loadState();
 if(!state.lastDayKey) state.lastDayKey=dateKey(new Date());
 if(!state.lastWeekKey) state.lastWeekKey=weekKey();
 save();
 let selectedGold = 100;
-let selectedRestGold = 200;
 let loggedIn = localStorage.getItem('playwithgoal-local-login') === '1';
 
 function freshState(){
@@ -107,12 +99,14 @@ function refreshPeriods(){
     state.lastDayKey = today;
   }
 
-  // 날짜가 바뀌면 완료된 일일/휴식 퀘스트를 새 퀘스트로 되돌림.
+  // 날짜가 바뀌면 일일 퀘스트를 새로 시작함.
   if(state.lastDayKey !== today){
+    state.quests = state.quests.filter(q=>!q.rest);
     state.quests.forEach(q=>{
       if(q.completed){
         q.completed = false;
       }
+      delete q.rest;
     });
     state.lastDayKey = today;
   }
@@ -267,7 +261,7 @@ function render(){
   document.querySelector('#rpg-xpbar').style.width=pct+'%';
   document.querySelector('#rpg-xptext').textContent=`${xp} / 100 EXP`;
   document.querySelector('#rpg-percent').textContent=pct+'%';
-  renderTerritory();renderQuests();renderBoss();renderCustom();renderAuth();renderShop();renderRestExample();
+  renderTerritory();renderQuests();renderBoss();renderCustom();renderAuth();renderShop();
 }
 
 function renderTerritory(){
@@ -288,7 +282,7 @@ function renderQuests(){
   const list=document.querySelector('#rpg-quests');
   const active=state.quests.filter(q=>!q.completed);
   if(!active.length){
-    list.innerHTML='<div class="empty">🎉 오늘의 퀘스트를 모두 완료했습니다.<br>새 퀘스트나 휴식 퀘스트를 만들어보세요.</div>';
+    list.innerHTML='<div class="empty">🎉 오늘의 퀘스트를 모두 완료했습니다.<br>새 퀘스트를 만들어보세요.</div>';
     return;
   }
   list.innerHTML=active.map(q=>`
@@ -325,7 +319,7 @@ function renderCustom(){
   const custom=state.quests.filter(q=>q.custom);
   list.innerHTML=custom.length?custom.map(q=>`
     <div class="custom-row">
-      <span><strong>${esc(q.name)}</strong> <small>· ${q.gold} G / ${q.exp} EXP${q.rest?' · 휴식':''}</small></span>
+      <span><strong>${esc(q.name)}</strong> <small>· ${q.gold} G / ${q.exp} EXP</small></span>
       <button data-custom-delete="${q.id}">삭제</button>
     </div>`).join(''):'<div class="empty">추가한 퀘스트가 아직 없습니다.</div>';
 }
@@ -428,19 +422,6 @@ function refreshShop(){
   toast('🎲 AI 상인이 새로운 장비를 가져왔습니다.');
 }
 
-function renderRestExample(){
-  const input=document.querySelector('#restQuestInput');
-  if(!input)return;
-  if(!input.value)input.placeholder=`예: ${REST_EXAMPLES[Math.floor(Math.random()*REST_EXAMPLES.length)]}`;
-}
-
-function addRestQuest(){
-  const input=document.querySelector('#restQuestInput');
-  const name=input.value.trim();
-  if(!name){toast('오늘 하고 싶은 휴식을 먼저 적어주세요.');input.focus();return;}
-  addQuest(name,selectedRestGold,true);
-  input.value='';
-}
 
 function completeQuest(id){
   const q=state.quests.find(x=>x.id===id);
@@ -463,13 +444,13 @@ function deleteQuest(id){
   save();render();toast(`🗑️ "${q.name}" 퀘스트를 삭제했습니다.`);
 }
 
-function addQuest(name,gold,rest=false){
+function addQuest(name,gold){
   name=name.trim();
   if(!name){toast('퀘스트 이름을 입력해주세요.');return false;}
   const g=Number(gold);
-  state.quests.push({id:uid('q'),name,gold:g,exp:Math.round(g/2),completed:false,custom:true,rest});
+  state.quests.push({id:uid('q'),name,gold:g,exp:Math.round(g/2),completed:false,custom:true});
   save();render();
-  toast(rest?'🌿 휴식 퀘스트가 추가되었습니다.':'⚔️ 새 퀘스트가 추가되었습니다.');
+  toast('⚔️ 새 퀘스트가 추가되었습니다.');
   return true;
 }
 
@@ -521,8 +502,6 @@ document.addEventListener('click',e=>{
   if(cdel)deleteQuest(cdel.dataset.customDelete);
   const buy=e.target.closest('[data-buy-item]');
   if(buy)buyItem(buy.dataset.buyItem);
-  const ex=e.target.closest('[data-example]');
-  if(ex){document.querySelector('#restQuestInput').value=ex.dataset.example;}
 });
 
 const on = (selector,event,handler) => { const el=document.querySelector(selector); if(el) el.addEventListener(event,handler); };
@@ -530,8 +509,6 @@ on('#upgradeButton','click',upgrade);
 on('#resetButton','click',reset);
 on('#newQuestButton','click',openQuestModal);
 on('#refreshShopButton','click',refreshShop);
-on('#addRestQuestButton','click',addRestQuest);
-document.querySelectorAll('.rest-gold').forEach(b=>b.addEventListener('click',()=>{ selectedRestGold=Number(b.dataset.restGold); document.querySelectorAll('.rest-gold').forEach(x=>x.classList.toggle('selected',x===b)); }));
 on('#addQuestButton','click',()=>{ const name=document.querySelector('#newQuestName'),gold=document.querySelector('#newQuestGold'); if(name&&gold&&addQuest(name.value,gold.value)) name.value=''; });
 on('#submitNewQuest','click',()=>{ const input=document.querySelector('#modalQuestName'); if(input&&addQuest(input.value,selectedGold)) closeDialog('#newQuestModal'); });
 on('#modalClose','click',()=>closeDialog('#newQuestModal'));

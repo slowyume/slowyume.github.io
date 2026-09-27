@@ -19,7 +19,6 @@
       <a href="#rpg">목표 생성</a>
       <a href="#bonus">목표 달성 보너스</a>
       <a href="#shop">장비 상점</a>
-      <a href="#rest">휴식 퀘스트</a>
       <button type="button" class="login-btn">QR 로그인</button>
       <button type="button" class="logout-btn hidden">로그아웃</button>
     </div>
@@ -36,7 +35,6 @@
       <a href="#rpg" class="nav-close-link">목표 생성 <span>⌂</span></a>
       <a href="#bonus" class="nav-close-link">목표 달성 보너스 <span>✓</span></a>
 <a href="#shop" class="nav-close-link">장비 상점 <span>⚔</span></a>
-<a href="#rest" class="nav-close-link">휴식 퀘스트 <span>☕</span></a>
       <button type="button" class="login-btn nav-close-link">QR 로그인 <span>→</span></button>
       <button type="button" class="logout-btn hidden nav-close-link">로그아웃 <span>←</span></button>
     </div>
@@ -50,7 +48,8 @@
       <p class="section-kicker">PLAY WITH GOAL</p>
       <h1>인생 Level Up!</h1>
       <p>일상의 작은 목표들을 게임처럼 달성해보세요.</p>
-      <p>후원 : 농협 966-02-421888 ㅇㅇㅈ </p>  </div>
+      <p class="menu-hint"><span>☰</span> 메뉴 버튼에 저장 등 다양한 기능</p>
+    </div>
 
     <div class="dashboard">
       <div class="column">
@@ -94,16 +93,6 @@
     <section id="shop" class="detail">
       <div class="detail-head"><div><h2>장비 상점</h2><p class="shop-note">현재 레벨에 맞춰 새로운 장비가 등장합니다.</p></div><button type="button" id="refreshShopButton" class="tiny-button">새 장비</button></div>
       <div id="rpg-shop" class="shop-list"></div>
-    </section>
-
-    <section id="rest" class="detail">
-      <div class="detail-head"><div><h2>휴식 퀘스트</h2><p class="shop-note">오늘 하고 싶은 휴식을 직접 적고 보상을 받아보세요.</p></div><span class="rest-reward-badge">200~300 G</span></div>
-      <div class="rest-form">
-        <input type="text" id="restQuestInput" maxlength="100" placeholder="오늘 하고 싶은 휴식을 적어주세요.">
-        <div class="rest-examples"><span>예시</span><button type="button" class="rest-example" data-example="따뜻한 차를 마시며 15분 아무것도 하지 않기">따뜻한 차</button><button type="button" class="rest-example" data-example="창문을 열고 20분 음악 들으며 쉬기">음악 듣기</button><button type="button" class="rest-example" data-example="공원 벤치에서 20분 하늘 바라보기">하늘 보기</button></div>
-        <div class="rest-rewards"><button type="button" class="rest-gold selected" data-rest-gold="200">+200 G</button><button type="button" class="rest-gold" data-rest-gold="250">+250 G</button><button type="button" class="rest-gold" data-rest-gold="300">+300 G</button></div>
-        <button type="button" id="addRestQuestButton" class="pill-button">휴식 퀘스트 만들기</button>
-      </div>
     </section>
 
     <section id="management" class="detail management hidden">
