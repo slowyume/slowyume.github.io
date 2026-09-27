@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="자신의 꿈까지 즐거운 여정이 되길 바랍니다.">
+<meta name="keywords" content="목표, 꿈, 일상 RPG, PlayWithGoal">
+<title>인생 Level Up! — 목표를 재미있게!</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="site-header">
+  <nav class="nav" aria-label="Main navigation">
+    <a href="#top" class="brand" aria-label="목표를 재미있게! 홈">
+      <span>목표를 재미있게!</span>
+    </a>
+    <div class="desktop-nav">
+      <a href="#rpg">목표 생성</a>
+      <a href="#bonus">목표 달성 보너스</a>
+      <a href="#shop">장비 상점</a>
+      <a href="#rest">휴식 퀘스트</a>
+      <button type="button" class="login-btn">로그인(저장)</button>
+      <button type="button" class="logout-btn hidden">로그아웃</button>
+    </div>
+    <button type="button" id="navOpenButton" class="menu-button" aria-label="메뉴 열기">☰</button>
+  </nav>
+
+  <div id="navOverlay" class="nav-overlay hidden" aria-hidden="true">
+    <div class="nav-overlay-head">
+      <a href="#top" class="overlay-brand">목표 관리</a>
+      <button type="button" id="navCloseButton" class="close-button" aria-label="메뉴 닫기">×</button>
+    </div>
+    <div class="mobile-nav-card">
+      <p>MENU</p>
+      <a href="#rpg" class="nav-close-link">목표 생성 <span>⌂</span></a>
+      <a href="#bonus" class="nav-close-link">목표 달성 보너스 <span>✓</span></a>
+<a href="#shop" class="nav-close-link">장비 상점 <span>⚔</span></a>
+<a href="#rest" class="nav-close-link">휴식 퀘스트 <span>☕</span></a>
+      <button type="button" class="login-btn nav-close-link">로그인(저장) <span>→</span></button>
+      <button type="button" class="logout-btn hidden nav-close-link">로그아웃 <span>←</span></button>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+<section id="rpg" class="section">
+  <div class="container">
+    <div class="intro">
+      <p class="section-kicker">PLAY WITH GOAL</p>
+      <h1>인생 Level Up!</h1>
+      <p>일상의 작은 목표들을 게임처럼 달성해보세요.</p>
+      <p class="menu-hint"><span>☰</span> 메뉴 버튼에 저장 등 다양한 기능</p>
+    </div>
+
+    <div class="dashboard">
+      <div class="column">
+        <section class="detail player-detail">
+          <h2>플레이어 정보</h2>
+          <div class="player-grid">
+            <div><span>레벨</span><strong id="rpg-level">1</strong></div>
+            <div><span>금화</span><strong id="rpg-gold">0</strong></div>
+          </div>
+          <div class="title-row"><span id="rpg-title"></span></div>
+          <div class="bar"><div id="rpg-xpbar"></div></div>
+          <div class="xp-label"><span id="rpg-xptext">0 / 100 EXP</span><span id="rpg-percent">0%</span></div>
+        </section>
+
+        <section class="detail territory-detail">
+          <h2>나의 영지</h2>
+          <div id="rpg-village" class="village">🌱</div>
+          <div id="rpg-houseName" class="house-name">새싹터</div>
+          <p id="rpg-houseDesc">작은 모험이 시작되는 곳</p>
+          <button type="button" id="upgradeButton" class="pill-button">집 업그레이드</button>
+          <p id="upgradeHint" class="small-note"></p>
+        </section>
+      </div>
+
+      <div class="column">
+        <section class="detail">
+          <div class="detail-head">
+            <h2>일일 퀘스트</h2>
+            <button type="button" id="newQuestButton" class="tiny-button">새 퀘스트 생성</button>
+          </div>
+          <div id="rpg-quests" class="quest-list"></div>
+        </section>
+
+        <section id="bonus" class="detail">
+          <div class="detail-head"><h2>주간 퀘스트 (보스 토벌)</h2></div>
+          <div id="rpg-boss"></div>
+        </section>
+      </div>
+    </div>
+
+    <section id="shop" class="detail">
+      <div class="detail-head"><div><h2>장비 상점</h2><p class="shop-note">현재 레벨에 맞춰 새로운 장비가 등장합니다.</p></div><button type="button" id="refreshShopButton" class="tiny-button">새 장비</button></div>
+      <div id="rpg-shop" class="shop-list"></div>
+    </section>
+
+    <section id="rest" class="detail">
+      <div class="detail-head"><div><h2>휴식 퀘스트</h2><p class="shop-note">오늘 하고 싶은 휴식을 직접 적고 보상을 받아보세요.</p></div><span class="rest-reward-badge">200~300 G</span></div>
+      <div class="rest-form">
+        <input type="text" id="restQuestInput" maxlength="100" placeholder="오늘 하고 싶은 휴식을 적어주세요.">
+        <div class="rest-examples"><span>예시</span><button type="button" class="rest-example" data-example="따뜻한 차를 마시며 15분 아무것도 하지 않기">따뜻한 차</button><button type="button" class="rest-example" data-example="창문을 열고 20분 음악 들으며 쉬기">음악 듣기</button><button type="button" class="rest-example" data-example="공원 벤치에서 20분 하늘 바라보기">하늘 보기</button></div>
+        <div class="rest-rewards"><button type="button" class="rest-gold selected" data-rest-gold="200">+200 G</button><button type="button" class="rest-gold" data-rest-gold="250">+250 G</button><button type="button" class="rest-gold" data-rest-gold="300">+300 G</button></div>
+        <button type="button" id="addRestQuestButton" class="pill-button">휴식 퀘스트 만들기</button>
+      </div>
+    </section>
+
+    <section id="management" class="detail management hidden">
+      <div class="management-head">
+        <div>
+          <h2>퀘스트 설정 및 관리</h2>
+          <p>퀘스트 목록을 추가, 수정, 삭제할 수 있습니다.</p>
+        </div>
+        <button type="button" id="resetButton" class="reset-button">진행도 전체 초기화</button>
+      </div>
+      <div class="management-form">
+        <input type="text" id="newQuestName" placeholder="새로운 퀘스트 이름 (예: 독서 30분)" maxlength="80">
+        <div class="form-row">
+          <select id="newQuestGold">
+            <option value="50">쉬움 (50 G)</option>
+            <option value="100" selected>보통 (100 G)</option>
+            <option value="200">어려움 (200 G)</option>
+            <option value="300">꽤 어려움 (300 G)</option>
+          </select>
+          <button type="button" id="addQuestButton" class="pill-button">추가</button>
+        </div>
+      </div>
+      <div id="rpg-custom-quests" class="custom-list"></div>
+    </section>
+  </div>
+</section>
+</main>
+
+<dialog id="newQuestModal">
+  <div class="modal-box">
+    <button type="button" id="modalClose" class="modal-close" aria-label="닫기">×</button>
+    <h2>새 퀘스트 생성</h2>
+    <input type="text" id="modalQuestName" placeholder="퀘스트 이름을 입력하세요" maxlength="80">
+    <p class="modal-label">난이도 선택</p>
+    <div class="difficulty-grid">
+      <button type="button" class="diff-btn" data-gold="50">쉬움</button>
+      <button type="button" class="diff-btn selected" data-gold="100">보통</button>
+      <button type="button" class="diff-btn" data-gold="200">어려움</button>
+      <button type="button" class="diff-btn" data-gold="250">매우 어려움</button>
+    </div>
+    <button type="button" id="submitNewQuest" class="accent-button">확인</button>
+  </div>
+</dialog>
+
+<dialog id="loginModal">
+  <div class="modal-box login-box">
+    <button type="button" id="loginClose" class="modal-close" aria-label="닫기">×</button>
+    <h2>로그인(저장)</h2>
+    <p>이 버전은 외부 서버 없이 브라우저에 진행도를 저장합니다.</p>
+    <button type="button" id="localLoginButton" class="accent-button">로컬 저장 모드 시작</button>
+  </div>
+</dialog>
+
+<div id="toast" class="toast" aria-live="polite"></div>
+
+<footer class="footer">
+  <div class="container footer-inner">
+    <div>
+      <a href="#top" class="footer-brand">목표를 재미있게!</a>
+      <p>자신의 꿈까지 즐거운 여정이 되길 빕니다.</p>
+    </div>
+    <div class="footer-links">
+      <div><strong>Explore</strong><a href="#rpg">목표 생성</a><a href="#bonus">목표 달성 보너스</a></div>
+      <div><strong>Start</strong><span>로그인하여 나만의 퀘스트를<br>추가하고 관리해보세요.</span></div>
+    </div>
+  </div>
+  <div class="copyright container"><span>© 2026 일상 RPG. All rights reserved.</span><span>Level up your life.</span></div>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
