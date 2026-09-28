@@ -12,33 +12,19 @@
 <body>
 <header class="site-header">
   <nav class="nav" aria-label="Main navigation">
-    <a href="#top" class="brand" aria-label="목표를 재미있게! 홈">
-      <span>목표를 재미있게!</span>
-    </a>
+    <div class="header-left">
+      <a href="#top" class="brand" aria-label="목표를 재미있게! 홈">
+        <span>목표를 재미있게!</span>
+      </a>
+      <button type="button" id="resetButton" class="reset-button header-reset">전체 초기화</button>
+    </div>
     <div class="desktop-nav">
-      <a href="#rpg">목표 생성</a>
-      <a href="#bonus">목표 달성 보너스</a>
-      <a href="#shop">장비 상점</a>
-      <button type="button" class="login-btn">QR 로그인</button>
+      <button type="button" class="login-btn">컴퓨터/스마트폰 QR 로그인</button>
       <button type="button" class="logout-btn hidden">로그아웃</button>
     </div>
-    <button type="button" id="navOpenButton" class="menu-button" aria-label="메뉴 열기">☰</button>
   </nav>
 
-  <div id="navOverlay" class="nav-overlay hidden" aria-hidden="true">
-    <div class="nav-overlay-head">
-      <a href="#top" class="overlay-brand">목표 관리</a>
-      <button type="button" id="navCloseButton" class="close-button" aria-label="메뉴 닫기">×</button>
-    </div>
-    <div class="mobile-nav-card">
-      <p>MENU</p>
-      <a href="#rpg" class="nav-close-link">목표 생성 <span>⌂</span></a>
-      <a href="#bonus" class="nav-close-link">목표 달성 보너스 <span>✓</span></a>
-<a href="#shop" class="nav-close-link">장비 상점 <span>⚔</span></a>
-      <button type="button" class="login-btn nav-close-link">QR 로그인 <span>→</span></button>
-      <button type="button" class="logout-btn hidden nav-close-link">로그아웃 <span>←</span></button>
-    </div>
-  </div>
+>
 </header>
 
 <main id="top">
@@ -47,7 +33,6 @@
     <div class="intro">
       <p class="section-kicker">PLAY WITH GOAL</p>
       <h1>인생 Level Up!</h1>
-      <p>일상의 작은 목표들을 게임처럼 달성해보세요.</p>
       <p>후원 : 농협 966-02-421888 ㅇㅇㅈ</p>
       <p>문의 : babygrand1211@naver.com</p>
 
@@ -103,7 +88,6 @@
           <h2>퀘스트 설정 및 관리</h2>
           <p>퀘스트 목록을 추가, 수정, 삭제할 수 있습니다.</p>
         </div>
-        <button type="button" id="resetButton" class="reset-button">진행도 전체 초기화</button>
       </div>
       <div class="management-form">
         <input type="text" id="newQuestName" placeholder="새로운 퀘스트 이름 (예: 독서 30분)" maxlength="80">
@@ -145,9 +129,9 @@
     <h2>QR 로그인</h2>
     <p>다른 기기에서 QR을 스캔하면 이 기기의 게임 진행도를 가져올 수 있습니다.</p>
     <div id="qrLoginHome">
-      <button type="button" id="createQrButton" class="accent-button">이 기기에서 QR 만들기</button>
-      <button type="button" id="importQrButton" class="qr-secondary-button">QR 로그인 주소 붙여넣기</button>
-      <textarea id="qrImportInput" class="qr-import-input hidden" rows="3" placeholder="QR을 스캔했을 때 나온 주소를 붙여넣으세요."></textarea>
+      <button type="button" id="createQrButton" class="accent-button">컴퓨터로 QR 만들기</button>
+      <button type="button" id="importQrButton" class="qr-secondary-button">QR 문자열 붙여넣기</button>
+      <textarea id="qrImportInput" class="qr-import-input hidden" rows="3" placeholder="스마트폰에서 인식한 QR 문자열을 붙여넣으세요."></textarea>
       <button type="button" id="applyQrImportButton" class="accent-button hidden">이 데이터로 로그인</button>
     </div>
     <div id="qrLoginView" class="qr-login-view hidden">
@@ -158,13 +142,24 @@
   </div>
 </dialog>
 
+<dialog id="resetConfirmModal">
+  <div class="modal-box reset-confirm-box">
+    <h2>정말 초기화 하시겠습니까?</h2>
+    <p>현재의 진행도와 목표 기록이 모두 초기화됩니다.</p>
+    <div class="reset-confirm-actions">
+      <button type="button" id="resetYesButton" class="accent-button">네</button>
+      <button type="button" id="resetNoButton" class="qr-secondary-button">아니오</button>
+    </div>
+  </div>
+</dialog>
+
 <div id="toast" class="toast" aria-live="polite"></div>
 
 <footer class="footer">
   <div class="container footer-inner">
     <div>
       <a href="#top" class="footer-brand">목표를 재미있게!</a>
-      <p>자신의 꿈까지 즐거운 여정이 되길 빕니다.</p>
+      <p>일상의 작은 목표들을 게임처럼 달성해보세요.</p>
     </div>
     <div class="footer-links">
       <div><strong>Explore</strong><a href="#rpg">목표 생성</a><a href="#bonus">목표 달성 보너스</a></div>

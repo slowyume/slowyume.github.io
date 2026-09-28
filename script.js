@@ -470,9 +470,12 @@ function claimBoss(){
   save();render();toast('🐉 보스 토벌 성공! +500 G · +300 EXP');
 }
 
-function reset(){
-  if(!confirm('진행도를 전체 초기화할까요?'))return;
-  state=freshState();save();render();toast('진행도가 초기화되었습니다.');
+function openResetConfirm(){
+  const modal=document.querySelector('#resetConfirmModal');
+  if(modal) modal.showModal();
+}
+function confirmReset(){
+  state=freshState();save();render();closeDialog('#resetConfirmModal');toast('진행도가 초기화되었습니다.');
 }
 
 function toast(msg){
@@ -506,7 +509,10 @@ document.addEventListener('click',e=>{
 
 const on = (selector,event,handler) => { const el=document.querySelector(selector); if(el) el.addEventListener(event,handler); };
 on('#upgradeButton','click',upgrade);
-on('#resetButton','click',reset);
+on('#resetButton','click',openResetConfirm);
+document.querySelectorAll('.section-reset').forEach(b=>b.addEventListener('click',openResetConfirm));
+on('#resetYesButton','click',confirmReset);
+on('#resetNoButton','click',()=>closeDialog('#resetConfirmModal'));
 on('#newQuestButton','click',openQuestModal);
 on('#refreshShopButton','click',refreshShop);
 on('#addQuestButton','click',()=>{ const name=document.querySelector('#newQuestName'),gold=document.querySelector('#newQuestGold'); if(name&&gold&&addQuest(name.value,gold.value)) name.value=''; });
@@ -520,8 +526,4 @@ on('#importQrButton','click',()=>{const input=document.querySelector('#qrImportI
 on('#applyQrImportButton','click',()=>{const input=document.querySelector('#qrImportInput');if(input)importLoginUrl(input.value);});
 on('#closeQrViewButton','click',()=>{document.querySelector('#qrLoginView')?.classList.add('hidden');document.querySelector('#qrLoginHome')?.classList.remove('hidden');});
 on('#loginClose','click',()=>closeDialog('#loginModal'));
-const overlay=document.querySelector('#navOverlay');
-on('#navOpenButton','click',()=>{ if(overlay){overlay.classList.remove('hidden');overlay.setAttribute('aria-hidden','false');} });
-on('#navCloseButton','click',()=>{ if(overlay){overlay.classList.add('hidden');overlay.setAttribute('aria-hidden','true');} });
-document.querySelectorAll('.nav-close-link').forEach(a=>a.addEventListener('click',()=>{ if(overlay) overlay.classList.add('hidden'); }));
 render();
