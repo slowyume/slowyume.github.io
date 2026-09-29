@@ -7,7 +7,6 @@
 <meta name="keywords" content="목표, 꿈, 일상 RPG, PlayWithGoal">
 <title>인생 Level Up! — 목표를 재미있게!</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 <header class="site-header">
@@ -16,13 +15,8 @@
  
       <button type="button" id="resetButton" class="reset-button header-reset">전체 초기화</button>
     </div>
-    <div class="desktop-nav">
-      <button type="button" class="login-btn">컴퓨터/스마트폰 QR 로그인</button>
-      <button type="button" class="logout-btn hidden">로그아웃</button>
-    </div>
   </nav>
 
->
 </header>
 
 <main id="top">
@@ -36,71 +30,36 @@
 
     </div>
 
-    <div class="dashboard">
-      <div class="column">
-        <section class="detail player-detail">
-          <h2>플레이어 정보</h2>
-          <div class="player-grid">
-            <div><span>레벨</span><strong id="rpg-level">1</strong></div>
-            <div><span>금화</span><strong id="rpg-gold">0</strong></div>
-          </div>
-          <div class="title-row"><span id="rpg-title"></span></div>
-          <div class="bar"><div id="rpg-xpbar"></div></div>
-          <div class="xp-label"><span id="rpg-xptext">0 / 100 EXP</span><span id="rpg-percent">0%</span></div>
-        </section>
-
-        <section class="detail territory-detail">
-          <h2>나의 영지</h2>
-          <div id="rpg-village" class="village">🌱</div>
-          <div id="rpg-houseName" class="house-name">새싹터</div>
-          <p id="rpg-houseDesc">작은 모험이 시작되는 곳</p>
-          <button type="button" id="upgradeButton" class="pill-button">집 업그레이드</button>
-          <p id="upgradeHint" class="small-note"></p>
-        </section>
-      </div>
-
-      <div class="column">
-        <section class="detail">
-          <div class="detail-head">
-            <h2>일일 퀘스트</h2>
-            <button type="button" id="newQuestButton" class="tiny-button">새 퀘스트 생성</button>
-          </div>
-          <div id="rpg-quests" class="quest-list"></div>
-        </section>
-
-        <section id="bonus" class="detail">
-          <div class="detail-head"><h2>주간 퀘스트 (보스 토벌)</h2></div>
-          <div id="rpg-boss"></div>
-        </section>
-      </div>
+    <div class="dashboard requested-order">
+      <section class="detail daily-quest-detail">
+        <div class="detail-head"><h2>일일 퀘스트</h2><button type="button" id="newQuestButton" class="tiny-button">새 퀘스트 생성</button></div>
+        <div id="rpg-quests" class="quest-list"></div>
+      </section>
+      <section id="bonus" class="detail weekly-quest-detail">
+        <div class="detail-head"><h2>주간 퀘스트 (보스 토벌)</h2></div>
+        <div id="rpg-boss"></div>
+      </section>
+      <section id="shop" class="detail equipment-shop-detail">
+        <div class="detail-head"><div><h2>장비 상점</h2><p class="shop-note">현재 레벨에 맞춰 새로운 장비가 등장합니다.</p></div><button type="button" id="refreshShopButton" class="tiny-button">새 장비</button></div>
+        <div id="rpg-shop" class="shop-list"></div>
+      </section>
+      <section class="detail territory-detail">
+        <h2>나의 영지</h2>
+        <div id="rpg-village" class="village">🌱</div>
+        <div id="rpg-houseName" class="house-name">새싹터</div>
+        <p id="rpg-houseDesc">작은 모험이 시작되는 곳</p>
+        <button type="button" id="upgradeButton" class="pill-button">집 업그레이드</button>
+        <p id="upgradeHint" class="small-note"></p>
+      </section>
+      <section class="detail player-detail">
+        <h2>플레이어 정보</h2>
+        <div class="player-grid"><div><span>레벨</span><strong id="rpg-level">1</strong></div><div><span>금화</span><strong id="rpg-gold">0</strong></div></div>
+        <div class="title-row"><span id="rpg-title"></span></div>
+        <div class="bar"><div id="rpg-xpbar"></div></div>
+        <div class="xp-label"><span id="rpg-xptext">0 / 100 EXP</span><span id="rpg-percent">0%</span></div>
+      </section>
     </div>
 
-    <section id="shop" class="detail">
-      <div class="detail-head"><div><h2>장비 상점</h2><p class="shop-note">현재 레벨에 맞춰 새로운 장비가 등장합니다.</p></div><button type="button" id="refreshShopButton" class="tiny-button">새 장비</button></div>
-      <div id="rpg-shop" class="shop-list"></div>
-    </section>
-
-    <section id="management" class="detail management hidden">
-      <div class="management-head">
-        <div>
-          <h2>퀘스트 설정 및 관리</h2>
-          <p>퀘스트 목록을 추가, 수정, 삭제할 수 있습니다.</p>
-        </div>
-      </div>
-      <div class="management-form">
-        <input type="text" id="newQuestName" placeholder="새로운 퀘스트 이름 (예: 독서 30분)" maxlength="80">
-        <div class="form-row">
-          <select id="newQuestGold">
-            <option value="50">쉬움 (50 G)</option>
-            <option value="100" selected>보통 (100 G)</option>
-            <option value="200">어려움 (200 G)</option>
-            <option value="300">꽤 어려움 (300 G)</option>
-          </select>
-          <button type="button" id="addQuestButton" class="pill-button">추가</button>
-        </div>
-      </div>
-      <div id="rpg-custom-quests" class="custom-list"></div>
-    </section>
   </div>
 </section>
 </main>
@@ -121,24 +80,7 @@
   </div>
 </dialog>
 
-<dialog id="loginModal">
-  <div class="modal-box login-box">
-    <button type="button" id="loginClose" class="modal-close" aria-label="닫기">×</button>
-    <h2>QR 로그인</h2>
-    <p>다른 기기에서 QR을 스캔하면 이 기기의 게임 진행도를 가져올 수 있습니다.</p>
-    <div id="qrLoginHome">
-      <button type="button" id="createQrButton" class="accent-button">컴퓨터로 QR 만들기</button>
-      <button type="button" id="importQrButton" class="qr-secondary-button">QR 문자열 붙여넣기</button>
-      <textarea id="qrImportInput" class="qr-import-input hidden" rows="3" placeholder="스마트폰에서 인식한 QR 문자열을 붙여넣으세요."></textarea>
-      <button type="button" id="applyQrImportButton" class="accent-button hidden">이 데이터로 로그인</button>
-    </div>
-    <div id="qrLoginView" class="qr-login-view hidden">
-      <div id="qrCode" class="qr-code"></div>
-      <p class="qr-status">휴대폰 카메라로 QR을 스캔하세요.</p>
-      <button type="button" id="closeQrViewButton" class="qr-secondary-button">뒤로</button>
-    </div>
-  </div>
-</dialog>
+
 
 <dialog id="resetConfirmModal">
   <div class="modal-box reset-confirm-box">
@@ -146,7 +88,7 @@
     <p>현재의 진행도와 목표 기록이 모두 초기화됩니다.</p>
     <div class="reset-confirm-actions">
       <button type="button" id="resetYesButton" class="accent-button">네</button>
-      <button type="button" id="resetNoButton" class="qr-secondary-button">아니오</button>
+      <button type="button" id="resetNoButton" class="secondary-button">아니오</button>
     </div>
   </div>
 </dialog>
@@ -161,7 +103,7 @@
     </div>
     <div class="footer-links">
       <div><strong>Explore</strong><a href="#rpg">목표 생성</a><a href="#bonus">목표 달성 보너스</a></div>
-      <div><strong>Start</strong><span>로그인하여 나만의 퀘스트를<br>추가하고 관리해보세요.</span></div>
+      <div><strong>Start</strong><span>오늘의 퀘스트를<br>게임처럼 달성해보세요.</span></div>
     </div>
   </div>
   <div class="copyright container"><span>© 2026 일상 RPG. All rights reserved.</span><span>Level up your life.</span></div>

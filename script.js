@@ -1,5 +1,4 @@
-const STORAGE_KEY = 'playwithgoal-qr-v4';
-const QR_PARAM = 'pwgl';
+const STORAGE_KEY = 'playwithgoal-local-v1';
 
 const TITLES = [
   { count: 0, title: '새로운 시작' },
@@ -36,7 +35,6 @@ if(!state.lastDayKey) state.lastDayKey=dateKey(new Date());
 if(!state.lastWeekKey) state.lastWeekKey=weekKey();
 save();
 let selectedGold = 100;
-let loggedIn = localStorage.getItem('playwithgoal-local-login') === '1';
 
 function freshState(){
   return {
@@ -155,103 +153,6 @@ function base64ToBytes(str){
   return bytes;
 }
 
-function encodeLoginData(){
-  const data={
-    v:1,
-    gold:state.gold,totalXp:state.totalXp,completedCount:state.completedCount,bossCount:state.bossCount,
-    streak:state.streak,lastPlayDate:state.lastPlayDate,lastDayKey:state.lastDayKey,lastWeekKey:state.lastWeekKey,
-    territoryLevel:state.territoryLevel,bossClaimed:state.bossClaimed,
-    quests:state.quests,inventory:state.inventory,equipped:state.equipped,
-    shopSeed:state.shopSeed,shopItems:state.shopItems
-  };
-  const json=JSON.stringify(data);
-  const bytes=new TextEncoder().encode(json);
-  return bytesToBase64(bytes);
-}
-
-function decodeLoginData(encoded){
-  try{
-    const data=JSON.parse(new TextDecoder().decode(base64ToBytes(encoded)));
-    if(!data||data.v!==1||!Array.isArray(data.quests)||!Array.isArray(data.inventory))throw new Error('invalid');
-    return data;
-  }catch{return null;}
-}
-
-function buildLoginUrl(){
-  const url=new URL(location.href);
-  url.search='';url.hash='';
-  url.searchParams.set(QR_PARAM,encodeLoginData());
-  return url.toString();
-}
-
-function openLoginModal(){
-  const modal=document.querySelector('#loginModal');
-  if(modal)modal.showModal();
-}
-
-function createLoginQr(){
-  const box=document.querySelector('#qrCode');
-  const home=document.querySelector('#qrLoginHome');
-  const view=document.querySelector('#qrLoginView');
-  if(!box||!home||!view)return;
-  if(typeof QRCode==='undefined'){
-    toast('QR 생성 라이브러리를 불러오지 못했습니다. 인터넷 연결을 확인해주세요.');
-    return;
-  }
-  box.innerHTML='';
-  const url=buildLoginUrl();
-  new QRCode(box,{text:url,width:230,height:230,colorDark:'#34423b',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
-  home.classList.add('hidden');view.classList.remove('hidden');
-}
-
-function importLoginUrl(raw){
-  try{
-    const url=new URL(raw.trim());
-    const encoded=url.searchParams.get(QR_PARAM);
-    const data=encoded?decodeLoginData(encoded):null;
-    if(!data){toast('유효한 PlayWithGoal QR 로그인 데이터가 아닙니다.');return false;}
-    const base=freshState();
-    state={...base,...data,
-      quests:Array.isArray(data.quests)?data.quests:[],inventory:Array.isArray(data.inventory)?data.inventory:[],
-      equipped:data.equipped&&typeof data.equipped==='object'?data.equipped:base.equipped,
-      shopItems:Array.isArray(data.shopItems)?data.shopItems:[],shopSeed:data.shopSeed||null,
-      lastDayKey:data.lastDayKey||dateKey(new Date()),lastWeekKey:data.lastWeekKey||weekKey()
-    };
-    loggedIn=true;
-    localStorage.setItem('playwithgoal-local-login','1');
-    save();
-    render();
-handleQrLoginFromUrl();
-    closeDialog('#loginModal');
-    toast('✨ QR 로그인 완료! 진행도를 불러왔습니다.');
-    return true;
-  }catch{
-    toast('QR 로그인 주소를 확인해주세요.');
-    return false;
-  }
-}
-
-function handleQrLoginFromUrl(){
-  const url=new URL(location.href);
-  const encoded=url.searchParams.get(QR_PARAM);
-  if(!encoded)return;
-  const data=decodeLoginData(encoded);
-  if(!data){toast('QR 로그인 데이터가 올바르지 않습니다.');return;}
-  const base=freshState();
-  state={...base,...data,
-    quests:Array.isArray(data.quests)?data.quests:[],inventory:Array.isArray(data.inventory)?data.inventory:[],
-    equipped:data.equipped&&typeof data.equipped==='object'?data.equipped:base.equipped,
-    shopItems:Array.isArray(data.shopItems)?data.shopItems:[],shopSeed:data.shopSeed||null,
-    lastDayKey:data.lastDayKey||dateKey(new Date()),lastWeekKey:data.lastWeekKey||weekKey()
-  };
-  loggedIn=true;
-  localStorage.setItem('playwithgoal-local-login','1');
-  save();
-  history.replaceState({},document.title,url.origin+url.pathname+url.hash);
-  render();
-  setTimeout(()=>toast('✨ QR 로그인 완료! 진행도를 불러왔습니다.'),50);
-}
-
 function render(){
   refreshPeriods();
   const lv=level(),t=title(),base=(lv-1)*100,xp=Math.max(0,state.totalXp-base),pct=Math.min(100,xp);
@@ -261,7 +162,7 @@ function render(){
   document.querySelector('#rpg-xpbar').style.width=pct+'%';
   document.querySelector('#rpg-xptext').textContent=`${xp} / 100 EXP`;
   document.querySelector('#rpg-percent').textContent=pct+'%';
-  renderTerritory();renderQuests();renderBoss();renderCustom();renderAuth();renderShop();
+  renderTerritory();renderQuests();renderBoss();renderShop();
 }
 
 function renderTerritory(){
@@ -314,21 +215,6 @@ function renderBoss(){
   document.querySelector('#claimBoss').addEventListener('click',claimBoss);
 }
 
-function renderCustom(){
-  const list=document.querySelector('#rpg-custom-quests');
-  const custom=state.quests.filter(q=>q.custom);
-  list.innerHTML=custom.length?custom.map(q=>`
-    <div class="custom-row">
-      <span><strong>${esc(q.name)}</strong> <small>· ${q.gold} G / ${q.exp} EXP</small></span>
-      <button data-custom-delete="${q.id}">삭제</button>
-    </div>`).join(''):'<div class="empty">추가한 퀘스트가 아직 없습니다.</div>';
-}
-
-function renderAuth(){
-  document.querySelectorAll('.login-btn').forEach(x=>x.classList.toggle('hidden',loggedIn));
-  document.querySelectorAll('.logout-btn').forEach(x=>x.classList.toggle('hidden',!loggedIn));
-  document.querySelector('#management').classList.toggle('hidden',!loggedIn);
-}
 
 function seededRandom(seed){
   let n=seed>>>0;
@@ -491,8 +377,6 @@ function openQuestModal(){
 }
 
 function closeDialog(id){document.querySelector(id).close();}
-function login(){openLoginModal();}
-function logout(){loggedIn=false;localStorage.removeItem('playwithgoal-local-login');render();toast('로그아웃했습니다.');}
 
 document.addEventListener('change',e=>{
   if(e.target.matches('.quest-check'))completeQuest(e.target.dataset.id);
@@ -501,8 +385,6 @@ document.addEventListener('change',e=>{
 document.addEventListener('click',e=>{
   const del=e.target.closest('[data-delete]');
   if(del)deleteQuest(del.dataset.delete);
-  const cdel=e.target.closest('[data-custom-delete]');
-  if(cdel)deleteQuest(cdel.dataset.customDelete);
   const buy=e.target.closest('[data-buy-item]');
   if(buy)buyItem(buy.dataset.buyItem);
 });
@@ -519,11 +401,4 @@ on('#addQuestButton','click',()=>{ const name=document.querySelector('#newQuestN
 on('#submitNewQuest','click',()=>{ const input=document.querySelector('#modalQuestName'); if(input&&addQuest(input.value,selectedGold)) closeDialog('#newQuestModal'); });
 on('#modalClose','click',()=>closeDialog('#newQuestModal'));
 document.querySelectorAll('.diff-btn').forEach(b=>b.addEventListener('click',()=>{ selectedGold=Number(b.dataset.gold); document.querySelectorAll('.diff-btn').forEach(x=>x.classList.toggle('selected',x===b)); }));
-document.querySelectorAll('.login-btn').forEach(b=>b.addEventListener('click',login));
-document.querySelectorAll('.logout-btn').forEach(b=>b.addEventListener('click',logout));
-on('#createQrButton','click',createLoginQr);
-on('#importQrButton','click',()=>{const input=document.querySelector('#qrImportInput'),button=document.querySelector('#applyQrImportButton');if(input)input.classList.toggle('hidden');if(button)button.classList.toggle('hidden');});
-on('#applyQrImportButton','click',()=>{const input=document.querySelector('#qrImportInput');if(input)importLoginUrl(input.value);});
-on('#closeQrViewButton','click',()=>{document.querySelector('#qrLoginView')?.classList.add('hidden');document.querySelector('#qrLoginHome')?.classList.remove('hidden');});
-on('#loginClose','click',()=>closeDialog('#loginModal'));
 render();
